@@ -1,90 +1,180 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Alpha Test Platform</title>
+<meta charset="UTF-8">
+<title>Alpha Test Platform</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: #f2f4f8;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-    .card {
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      width: 320px;
-    }
+.card {
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  width:400px;
+  text-align:center;
+}
 
-    h1 {
-      color: #2c4a9e;
-      margin-bottom: 10px;
-    }
+.hidden { display:none; }
 
-    button {
-      background-color: #2c4a9e;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 20px;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
+button {
+  margin:8px;
+  padding:10px;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
 <!-- HOME -->
 <div id="home" class="card">
-  <h1>ALPHA TEST</h1>
-  <p>Seleziona la tua azienda</p>
+  <h2>Seleziona azienda</h2>
   <button onclick="login()">Azienda Demo</button>
 </div>
 
-<!-- DASHBOARD AZIENDA -->
+<!-- DASHBOARD -->
 <div id="dashboard" class="card hidden">
-  <h1>Azienda Demo</h1>
-  <p>Servizi disponibili</p>
+  <h2>Servizi</h2>
+  <button onclick="startTest()">Alpha Test 2026</button>
+</div>
 
-  <button onclick="openAlphaTest()">Alpha Test</button>
+<!-- TEST -->
+<div id="test" class="card hidden">
+  <h3 id="question"></h3>
+  <div id="answers"></div>
+</div>
+
+<!-- RISULTATI -->
+<div id="result" class="card hidden">
+  <h2>Risultato</h2>
+  <p id="score"></p>
+  <p id="time"></p>
+  <div id="weak"></div>
 </div>
 
 <script>
 
-function login() {
-  const password = prompt("Inserisci password:");
+// 🔥 DOMANDE DAL TUO EXCEL (prime di esempio)
+const questions = [
+{
+q: "Cos'è il risk management?",
+answers: ["Gestione del rischio","Marketing","Finanza","Vendite"],
+correct: "Gestione del rischio",
+shuffle: true,
+category: "Risk Management"
+},
+{
+q: "Qual è la capitale d'Italia?",
+answers: ["Roma","Milano","Napoli","Torino"],
+correct: "Roma",
+shuffle: true,
+category: "Geografia"
+}
+];
 
-  if(password === "GiuliaGAM") {
-    document.getElementById("home").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-  } else {
-    alert("Password errata");
+// 🔐 LOGIN
+function login() {
+  let p = prompt("Password");
+  if(p === "GiuliaGAM") {
+    home.classList.add("hidden");
+    dashboard.classList.remove("hidden");
   }
 }
 
-function openAlphaTest() {
-  alert("Qui entrerai nel sistema di test 🔥");
+// 🎯 VARIABILI
+let testQuestions = [];
+let current = 0;
+let score = 0;
+let startTime;
+let errorsByCategory = {};
+
+// 🚀 AVVIO TEST
+function startTest(category = null) {
+  dashboard.classList.add("hidden");
+  test.classList.remove("hidden");
+
+  startTime = new Date();
+  current = 0;
+  score = 0;
+  errorsByCategory = {};
+
+  let pool = category 
+    ? questions.filter(q => q.category === category)
+    : questions;
+
+  testQuestions = shuffle([...pool]).slice(0, category ? 15 : 30);
+
+  loadQuestion();
+}
+
+// 📌 CARICA DOMANDA
+function loadQuestion() {
+  if(current >= testQuestions.length) return endTest();
+
+  let q = testQuestions[current];
+  question.innerText = q.q;
+
+  let answers = [...q.answers];
+  if(q.shuffle) answers = shuffle(answers);
+
+  answersDiv.innerHTML = "";
+  answers.forEach(a => {
+    let btn = document.createElement("button");
+    btn.innerText = a;
+    btn.onclick = () => checkAnswer(a);
+    answersDiv.appendChild(btn);
+  });
+}
+
+// ✅ CONTROLLO RISPOSTA
+function checkAnswer(ans) {
+  let q = testQuestions[current];
+
+  if(ans === q.correct) {
+    score++;
+  } else {
+    if(!errorsByCategory[q.category]) errorsByCategory[q.category] = 0;
+    errorsByCategory[q.category]++;
+  }
+
+  current++;
+  loadQuestion();
+}
+
+// ⏱ FINE TEST
+function endTest() {
+  test.classList.add("hidden");
+  result.classList.remove("hidden");
+
+  let endTime = new Date();
+  let timeSpent = Math.round((endTime - startTime)/1000);
+
+  scoreDiv.innerText = `Punteggio: ${score}/${testQuestions.length}`;
+  timeDiv.innerText = `Tempo: ${timeSpent} sec`;
+
+  weak.innerHTML = "<h4>Debolezze:</h4>";
+
+  Object.keys(errorsByCategory).forEach(cat => {
+    let btn = document.createElement("button");
+    btn.innerText = cat;
+    btn.onclick = () => startTest(cat);
+    weak.appendChild(btn);
+  });
+}
+
+// 🔀 SHUFFLE
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
 </script>
-
 </body>
 </html>
