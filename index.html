@@ -74,20 +74,34 @@ function accessoScuola(){
   }
 }
 
+// REGISTRAZIONE CORRETTA
 async function registrati(){
   const nome = document.getElementById("nome").value;
   const cognome = document.getElementById("cognome").value;
   const password = document.getElementById("password").value;
 
-  await db.from("students").insert([{name:nome,surname:cognome,password:password}]);
+  if(!nome || !cognome || !password){
+    alert("Compila tutti i campi");
+    return;
+  }
 
-  alert("Registrato!");
+  await db.from("students").insert([
+    {name:nome, surname:cognome, password:password}
+  ]);
+
+  alert("Registrazione avvenuta!");
 }
 
+// LOGIN CORRETTO
 async function login(){
   const nome = document.getElementById("nome").value;
   const cognome = document.getElementById("cognome").value;
   const password = document.getElementById("password").value;
+
+  if(!nome || !cognome || !password){
+    alert("Compila tutti i campi");
+    return;
+  }
 
   const { data } = await db
     .from("students")
@@ -105,7 +119,7 @@ async function login(){
 }
 
 function startTest(){
-  alert("Test collegato! (step successivo)");
+  alert("Prossimo step: quiz vero 🔥");
 }
 
 </script>
