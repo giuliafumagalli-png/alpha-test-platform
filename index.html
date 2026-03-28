@@ -1,128 +1,1824 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>Alpha Test 2026</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha Test 2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<style>
-body {
-  font-family: Arial;
-  background: #f5f7fb;
-  text-align: center;
-  padding: 40px;
-}
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 400px;
-  margin: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-button {
-  padding: 12px 20px;
-  border: none;
-  background: #2c4a9e;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-input {
-  display:block;
-  margin:10px auto;
-  padding:10px;
-  width:80%;
-}
-</style>
+  <style>
+    :root{
+      --bg:#f5f7fc;
+      --bg2:#eef3fb;
+      --card:#ffffff;
+      --line:#d9e2f2;
+      --text:#1f2a44;
+      --muted:#60708e;
+      --blue:#334ea1;
+      --blue2:#4c68c2;
+      --blue-soft:#eaf0ff;
+      --green:#1f9d5b;
+      --red:#d64545;
+      --amber:#c58b18;
+      --shadow:0 14px 34px rgba(30,56,120,.10);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:"Titillium Web",system-ui,sans-serif;
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .screen{display:none;min-height:100vh}
+    .screen.active{display:block}
+
+    .wrap{
+      width:min(1120px, calc(100% - 32px));
+      margin:0 auto;
+    }
+
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px 0;
+    }
+
+    .hero-card{
+      width:min(920px,100%);
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(217,226,242,.9);
+      box-shadow:var(--shadow);
+      border-radius:28px;
+      padding:42px 28px;
+      backdrop-filter: blur(12px);
+      text-align:center;
+    }
+
+    .logo-block{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .crest{
+      width:88px;
+      height:102px;
+      position:relative;
+      background:linear-gradient(180deg,#3e59b8,#2f4690);
+      clip-path:polygon(50% 0%, 86% 10%, 94% 44%, 50% 100%, 6% 44%, 14% 10%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:34px;
+      font-weight:700;
+      border:4px solid #d9deef;
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.3);
+    }
+
+    .brand-text{
+      text-align:left;
+    }
+
+    .brand-text .top{
+      font-size:17px;
+      color:var(--blue);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      line-height:1.1;
+    }
+
+    .brand-text .main{
+      font-size:34px;
+      line-height:1;
+      color:var(--blue);
+      font-weight:700;
+    }
+
+    .brand-text .sub{
+      font-size:18px;
+      color:var(--blue);
+      letter-spacing:.06em;
+    }
+
+    .hero-title{
+      font-size:22px;
+      color:var(--muted);
+      margin:12px 0 28px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:14px 22px;
+      font-size:18px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-primary:hover{background:var(--blue2)}
+    .btn-secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
+    .btn-secondary:hover{background:#f8faff}
+    .btn-danger{background:#fff;color:var(--red);border:1px solid #f0caca}
+    .btn-mini{padding:10px 14px;font-size:16px;border-radius:12px}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .hint{
+      color:var(--muted);
+      font-size:15px;
+      margin-top:12px;
+    }
+
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(18,33,76,.28);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
+      padding:20px;
+    }
+    .modal-overlay.show{display:flex}
+
+    .modal{
+      width:min(420px,100%);
+      background:#fff;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      border:1px solid var(--line);
+      padding:28px;
+    }
+
+    .modal h3{margin:0 0 8px;font-size:28px;color:var(--blue)}
+    .modal p{margin:0 0 18px;color:var(--muted)}
+    .field{
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      font-size:18px;
+      outline:none;
+      background:#fff;
+      color:var(--text);
+      margin-bottom:12px;
+    }
+    .field:focus{border-color:#9db1ec;box-shadow:0 0 0 4px rgba(76,104,194,.10)}
+    .error-text{display:none;color:var(--red);font-size:15px;margin-top:4px}
+    .error-text.show{display:block}
+    .modal-actions{display:flex;gap:10px;margin-top:8px}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:30;
+      background:rgba(245,247,252,.92);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+
+    .topbar-inner{
+      width:min(1180px,calc(100% - 24px));
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:14px 0;
+    }
+
+    .topbar-brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .mini-crest{
+      width:48px;height:56px;
+      clip-path:polygon(50% 0%, 86% 10%, 94% 44%, 50% 100%, 6% 44%, 14% 10%);
+      background:linear-gradient(180deg,#3e59b8,#2f4690);
+      color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:20px;
+      border:2px solid #dfe5f5;
+      flex-shrink:0;
+    }
+
+    .topbar-title{
+      font-weight:700;
+      color:var(--blue);
+      font-size:20px;
+      line-height:1.05;
+    }
+    .topbar-sub{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.05;
+    }
+
+    .topbar-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .page{
+      padding:28px 0 42px;
+    }
+
+    .grid{
+      display:grid;
+      gap:18px;
+    }
+
+    .grid-2{
+      grid-template-columns:1.2fr .8fr;
+    }
+
+    .grid-3{
+      grid-template-columns:repeat(3,1fr);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+
+    .card h2,.card h3,.card h4{margin:0 0 10px}
+    .muted{color:var(--muted)}
+    .small{font-size:14px}
+    .section-title{
+      font-size:28px;
+      color:var(--blue);
+      margin:0 0 6px;
+    }
+
+    .welcome{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .student-chip{
+      background:var(--blue-soft);
+      color:var(--blue);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:600;
+      margin-top:10px;
+    }
+
+    .service-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .service{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:20px;
+      background:linear-gradient(180deg,#fff,#f9fbff);
+    }
+
+    .service h4{font-size:22px;color:var(--blue);margin:0 0 8px}
+    .service p{margin:0 0 14px;color:var(--muted)}
+    .service .actions{display:flex;gap:10px;flex-wrap:wrap}
+
+    .metric{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      background:#fbfcff;
+    }
+    .metric .label{font-size:14px;color:var(--muted)}
+    .metric .value{font-size:34px;font-weight:700;color:var(--blue);line-height:1}
+    .metric .sub{font-size:15px;color:var(--muted);margin-top:4px}
+
+    .history-list,.weak-list,.admin-list,.wrong-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .history-item,.weak-item,.admin-item,.wrong-item{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+      background:#fff;
+    }
+
+    .history-head,.weak-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:600;
+    }
+    .pill.good{background:#e9f8ef;color:var(--green)}
+    .pill.mid{background:#fff5df;color:var(--amber)}
+    .pill.bad{background:#fdecec;color:var(--red)}
+    .pill.blue{background:var(--blue-soft);color:var(--blue)}
+
+    .bars{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+    .bar-row{display:grid;grid-template-columns:160px 1fr 54px;gap:12px;align-items:center}
+    .bar-track{
+      height:12px;
+      background:#eef3fd;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid #e0e8f8;
+    }
+    .bar-fill{
+      height:100%;
+      background:linear-gradient(90deg,var(--blue),#6f88db);
+      width:0%;
+      border-radius:999px;
+    }
+
+    .quiz-layout{
+      display:grid;
+      grid-template-columns:1fr 320px;
+      gap:18px;
+    }
+
+    .progress{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .progress-bar{
+      width:100%;
+      height:12px;
+      background:#eef3fd;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid #dfe8fa;
+      margin-top:8px;
+    }
+    .progress-bar-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--blue),#6d86dc);
+      transition:width .2s ease;
+    }
+
+    .timer{
+      font-weight:700;
+      color:var(--blue);
+      font-size:22px;
+      background:var(--blue-soft);
+      padding:10px 14px;
+      border-radius:16px;
+      white-space:nowrap;
+    }
+
+    .question-box{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px;
+      background:#fff;
+    }
+
+    .question-cat{
+      display:inline-flex;
+      padding:6px 12px;
+      border-radius:999px;
+      background:var(--blue-soft);
+      color:var(--blue);
+      font-weight:600;
+      margin-bottom:12px;
+    }
+
+    .question-text{
+      font-size:26px;
+      line-height:1.25;
+      margin:0 0 18px;
+    }
+
+    .answers{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .answer{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:15px 16px;
+      background:#fff;
+      text-align:left;
+      cursor:pointer;
+      transition:.18s ease;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .answer:hover{border-color:#b7c8f1;background:#f9fbff}
+    .answer.selected{border-color:var(--blue);background:var(--blue-soft)}
+    .answer-letter{
+      min-width:34px;
+      height:34px;
+      border-radius:999px;
+      background:#edf2ff;
+      color:var(--blue);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      flex-shrink:0;
+    }
+    .answer-text{font-size:18px;line-height:1.35}
+
+    .quiz-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .side-card{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      background:#fff;
+    }
+
+    .legend{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .legend-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-size:16px;
+    }
+
+    .result-hero{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:18px;
+      align-items:center;
+    }
+
+    .score-circle{
+      width:190px;height:190px;margin:auto;
+      border-radius:50%;
+      background:conic-gradient(var(--blue) var(--deg), #e5edff 0deg);
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+    }
+    .score-circle::after{
+      content:"";
+      position:absolute;
+      width:136px;height:136px;border-radius:50%;
+      background:#fff;border:1px solid var(--line);
+    }
+    .score-inner{
+      position:relative;
+      z-index:2;
+      text-align:center;
+    }
+    .score-big{font-size:40px;font-weight:700;color:var(--blue);line-height:1}
+    .score-small{font-size:18px;color:var(--muted)}
+
+    .result-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-style:italic;
+    }
+
+    .admin-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .admin-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .admin-mini{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      background:#fbfcff;
+    }
+
+    .hidden{display:none !important}
+
+    @media (max-width: 980px){
+      .grid-2,.quiz-layout,.result-hero,.result-grid{grid-template-columns:1fr}
+      .grid-3,.admin-stats{grid-template-columns:1fr}
+      .service-grid{grid-template-columns:1fr}
+      .bar-row{grid-template-columns:120px 1fr 48px}
+      .question-text{font-size:22px}
+    }
+
+    @media (max-width: 640px){
+      .hero-card{padding:28px 18px}
+      .brand-text{text-align:center}
+      .brand-text .main{font-size:28px}
+      .section-title{font-size:24px}
+      .topbar-title{font-size:17px}
+      .answer-text{font-size:17px}
+      .score-circle{width:160px;height:160px}
+      .score-circle::after{width:116px;height:116px}
+      .score-big{font-size:34px}
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="card" id="loginScuola">
-  <h2>Scuola Internazionale Etica & Sicurezza</h2>
-  <button onclick="accessoScuola()">Accedi</button>
-</div>
+  <!-- HOME -->
+  <section id="screen-home" class="screen active">
+    <div class="hero">
+      <div class="hero-card wrap">
+        <div class="logo-block">
+          <div class="crest">3A</div>
+          <div class="brand-text">
+            <div class="top">Scuola Internazionale</div>
+            <div class="main">ETICA&amp;SICUREZZA</div>
+            <div class="sub">MILANO - L’AQUILA</div>
+          </div>
+        </div>
+        <div class="hero-title">Piattaforma riservata per simulazioni, micro-test e monitoraggio personalizzato.</div>
+        <button class="btn btn-primary" id="btnOpenSchool">Accedi all'area scuola</button>
+        <div class="hint">Accesso studenti personale dopo la password scuola.</div>
+      </div>
+    </div>
+  </section>
 
-<div class="card" id="loginStudente" style="display:none">
-  <h3>Login Studente</h3>
-  <input id="nome" placeholder="Nome">
-  <input id="cognome" placeholder="Cognome">
-  <input id="password" placeholder="Password">
-  <button onclick="login()">Entra</button>
-  <button onclick="registrati()">Registrati</button>
-</div>
+  <!-- AUTH -->
+  <section id="screen-auth" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="mini-crest">3A</div>
+          <div>
+            <div class="topbar-title">Scuola Internazionale Etica &amp; Sicurezza</div>
+            <div class="topbar-sub">Accesso studenti</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-mini" id="btnBackHome">Torna indietro</button>
+        </div>
+      </div>
+    </div>
 
-<div class="card" id="dashboard" style="display:none">
-  <h3>Dashboard</h3>
-  <button onclick="startTest()">Alpha Test 30 domande</button>
-</div>
+    <div class="page">
+      <div class="wrap" style="max-width:700px">
+        <div class="card">
+          <h2 class="section-title">Login Studente</h2>
+          <p class="muted">Registrati la prima volta, poi usa sempre gli stessi dati per rientrare e ritrovare il tuo storico.</p>
+          <div style="margin-top:18px">
+            <input class="field" id="authName" placeholder="Nome">
+            <input class="field" id="authSurname" placeholder="Cognome">
+            <input class="field" id="authPassword" type="password" placeholder="Password">
+            <div id="authError" class="error-text"></div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-primary" id="btnLogin">Entra</button>
+              <button class="btn btn-secondary" id="btnRegister">Registrati</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script>
+  <!-- DASHBOARD -->
+  <section id="screen-dashboard" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="mini-crest">3A</div>
+          <div>
+            <div class="topbar-title">Scuola Internazionale Etica &amp; Sicurezza</div>
+            <div class="topbar-sub">Dashboard personale</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-mini" id="btnAdminOpen">Area admin</button>
+          <button class="btn btn-danger btn-mini" id="btnLogout">Esci</button>
+        </div>
+      </div>
+    </div>
 
-const SUPABASE_URL = "https://bnhoengdtkrrwpbezwi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_YI1wHHGNOnMeASCg7b4NQw_Ck2F1M2L";
+    <div class="page">
+      <div class="wrap">
+        <div class="card">
+          <div class="welcome">
+            <div>
+              <h2 class="section-title">Benvenuta nella tua area</h2>
+              <div class="muted">Qui puoi fare la simulazione completa, i micro-test per argomento e vedere il tuo andamento.</div>
+              <div class="student-chip" id="studentChip">Studente</div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-primary" id="btnFullTest">Simulazione Alpha Test</button>
+              <button class="btn btn-secondary" id="btnRefreshDashboard">Aggiorna dashboard</button>
+            </div>
+          </div>
+        </div>
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="card">
+            <h3>Servizi disponibili</h3>
+            <div class="service-grid">
+              <div class="service">
+                <h4>Alpha Test 2026</h4>
+                <p>Simulazione completa da 30 domande casuali su tutto il programma.</p>
+                <div class="actions">
+                  <button class="btn btn-primary btn-mini" id="btnFullTest2">Avvia</button>
+                </div>
+              </div>
+              <div class="service">
+                <h4>Micro-simulazioni</h4>
+                <p>Sessioni rapide da 15 domande su un singolo argomento.</p>
+                <div class="actions">
+                  <button class="btn btn-secondary btn-mini" id="btnGoMicro">Scegli argomento</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-function accessoScuola(){
-  const p = prompt("Password scuola");
-  if(p==="GiuliaGAM"){
-    document.getElementById("loginScuola").style.display="none";
-    document.getElementById("loginStudente").style.display="block";
-  }
-}
+          <div class="card">
+            <h3>I tuoi numeri</h3>
+            <div class="grid grid-3" style="margin-top:10px">
+              <div class="metric">
+                <div class="label">Tentativi totali</div>
+                <div class="value" id="metricAttempts">0</div>
+                <div class="sub">storico personale</div>
+              </div>
+              <div class="metric">
+                <div class="label">Miglior punteggio</div>
+                <div class="value" id="metricBest">0</div>
+                <div class="sub">su 30 o 15</div>
+              </div>
+              <div class="metric">
+                <div class="label">Ultimo punteggio</div>
+                <div class="value" id="metricLast">0</div>
+                <div class="sub">ultimo test salvato</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-// REGISTRAZIONE CORRETTA
-async function registrati(){
-  const nome = document.getElementById("nome").value;
-  const cognome = document.getElementById("cognome").value;
-  const password = document.getElementById("password").value;
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="card">
+            <h3>Andamento ultimi tentativi</h3>
+            <p class="muted small">Ogni barra mostra la percentuale ottenuta.</p>
+            <div id="historyBars" class="bars"></div>
+          </div>
 
-  if(!nome || !cognome || !password){
-    alert("Compila tutti i campi");
-    return;
-  }
+          <div class="card">
+            <h3>Argomenti da rinforzare</h3>
+            <p class="muted small">Se fai errori ripetuti su un tema, lo vedrai qui.</p>
+            <div id="weakList" class="weak-list"></div>
+          </div>
+        </div>
 
-  await db.from("students").insert([
-    {name:nome, surname:cognome, password:password}
-  ]);
+        <div class="card" style="margin-top:18px">
+          <h3>Micro-simulazioni per argomento</h3>
+          <p class="muted small">Scegli un tema e avvia un test rapido da 15 domande.</p>
+          <div id="microButtons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"></div>
+        </div>
 
-  alert("Registrazione avvenuta!");
-}
+        <div class="card" style="margin-top:18px">
+          <h3>Storico tentativi</h3>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-// LOGIN CORRETTO
-async function login(){
-  const nome = document.getElementById("nome").value;
-  const cognome = document.getElementById("cognome").value;
-  const password = document.getElementById("password").value;
+  <!-- QUIZ -->
+  <section id="screen-quiz" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="mini-crest">3A</div>
+          <div>
+            <div class="topbar-title">Simulazione in corso</div>
+            <div class="topbar-sub" id="quizSubTitle">Alpha Test 2026</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-mini" id="btnQuitQuiz">Interrompi</button>
+        </div>
+      </div>
+    </div>
 
-  if(!nome || !cognome || !password){
-    alert("Compila tutti i campi");
-    return;
-  }
+    <div class="page">
+      <div class="wrap quiz-layout">
+        <div class="card">
+          <div class="progress">
+            <div style="min-width:260px;flex:1">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+                <div id="quizProgressLabel" style="font-weight:700;color:var(--blue)">Domanda 1 di 30</div>
+                <div id="quizProgressPct" class="muted">0%</div>
+              </div>
+              <div class="progress-bar">
+                <div id="quizProgressFill" class="progress-bar-fill"></div>
+              </div>
+            </div>
+            <div class="timer" id="quizTimer">00:00</div>
+          </div>
 
-  const { data } = await db
-    .from("students")
-    .select("*")
-    .eq("name", nome)
-    .eq("surname", cognome)
-    .eq("password", password);
+          <div class="question-box">
+            <div class="question-cat" id="quizCategory">Categoria</div>
+            <h2 class="question-text" id="quizQuestionText">Domanda</h2>
+            <div id="quizAnswers" class="answers"></div>
 
-  if(data.length>0){
-    document.getElementById("loginStudente").style.display="none";
-    document.getElementById("dashboard").style.display="block";
-  } else {
-    alert("Dati errati");
-  }
-}
+            <div class="quiz-actions">
+              <button class="btn btn-secondary" id="btnQuizBackDash">Torna alla dashboard</button>
+              <button class="btn btn-primary" id="btnNextQuestion" disabled>Avanti</button>
+            </div>
+          </div>
+        </div>
 
-function startTest(){
-  alert("Prossimo step: quiz vero 🔥");
-}
+        <div class="card">
+          <div class="side-card">
+            <h3>Dettagli sessione</h3>
+            <div class="legend">
+              <div class="legend-item"><span>Tipo</span><strong id="legendType">Completa</strong></div>
+              <div class="legend-item"><span>Domande</span><strong id="legendCount">30</strong></div>
+              <div class="legend-item"><span>Studente</span><strong id="legendStudent">-</strong></div>
+            </div>
+          </div>
 
-</script>
+          <div class="side-card" style="margin-top:14px">
+            <h3>Regola test</h3>
+            <p class="muted small">La risposta non viene corretta subito. Seleziona la tua scelta e clicca avanti. Alla fine vedrai punteggio, tempo, errori e aree da rinforzare.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- RESULTS -->
+  <section id="screen-results" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="mini-crest">3A</div>
+          <div>
+            <div class="topbar-title">Risultati simulazione</div>
+            <div class="topbar-sub">Analisi finale</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-mini" id="btnBackDashboardFromResults">Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="wrap">
+        <div class="card">
+          <div class="result-hero">
+            <div>
+              <div class="score-circle" id="scoreCircle">
+                <div class="score-inner">
+                  <div class="score-big" id="resultScoreBig">0/0</div>
+                  <div class="score-small" id="resultScorePct">0%</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h2 class="section-title">Simulazione completata</h2>
+              <p class="muted" id="resultSummaryText">Hai concluso il test.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                <span class="pill blue" id="resultTimePill">Tempo: 00:00</span>
+                <span class="pill blue" id="resultTypePill">Tipo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div class="card">
+            <h3>Performance per argomento</h3>
+            <div id="resultCategoryBars" class="bars"></div>
+          </div>
+
+          <div class="card">
+            <h3>Argomenti consigliati per micro-test</h3>
+            <div id="resultWeakTopics" class="weak-list"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+            <h3>Domande sbagliate</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-secondary btn-mini" id="btnNewFullTestFromResults">Nuovo Alpha Test</button>
+              <button class="btn btn-primary btn-mini" id="btnDashboardFromResults2">Torna alla dashboard</button>
+            </div>
+          </div>
+          <div id="wrongAnswersList" class="wrong-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="screen-admin" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-brand">
+          <div class="mini-crest">3A</div>
+          <div>
+            <div class="topbar-title">Area admin</div>
+            <div class="topbar-sub">Monitoraggio piattaforma</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-mini" id="btnAdminBack">Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="wrap">
+        <div class="card">
+          <div class="admin-head">
+            <div>
+              <h2 class="section-title">Panoramica amministrativa</h2>
+              <p class="muted">Versione base: studenti registrati, tentativi salvati e riepilogo generale.</p>
+            </div>
+            <button class="btn btn-primary btn-mini" id="btnAdminRefresh">Aggiorna dati</button>
+          </div>
+
+          <div class="admin-stats">
+            <div class="admin-mini">
+              <div class="label muted">Studenti registrati</div>
+              <div class="value" id="adminStudentsCount" style="font-size:34px;font-weight:700;color:var(--blue)">0</div>
+            </div>
+            <div class="admin-mini">
+              <div class="label muted">Tentativi totali</div>
+              <div class="value" id="adminResultsCount" style="font-size:34px;font-weight:700;color:var(--blue)">0</div>
+            </div>
+            <div class="admin-mini">
+              <div class="label muted">Media generale %</div>
+              <div class="value" id="adminAvgPct" style="font-size:34px;font-weight:700;color:var(--blue)">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="card">
+            <h3>Ultimi studenti registrati</h3>
+            <div id="adminStudentsList" class="admin-list"></div>
+          </div>
+          <div class="card">
+            <h3>Ultimi tentativi</h3>
+            <div id="adminResultsList" class="admin-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHOOL PASSWORD MODAL -->
+  <div class="modal-overlay" id="schoolModal">
+    <div class="modal">
+      <h3>Accesso area scuola</h3>
+      <p>Inserisci la password per entrare nell’area riservata.</p>
+      <input id="schoolPasswordInput" class="field" type="password" placeholder="Password scuola">
+      <div id="schoolError" class="error-text">Password errata.</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnSchoolCancel">Annulla</button>
+        <button class="btn btn-primary" id="btnSchoolSubmit">Accedi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PASSWORD MODAL -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal">
+      <h3>Accesso admin</h3>
+      <p>Inserisci la password admin.</p>
+      <input id="adminPasswordInput" class="field" type="password" placeholder="Password admin">
+      <div id="adminError" class="error-text">Password errata.</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnAdminCancel">Annulla</button>
+        <button class="btn btn-primary" id="btnAdminSubmit">Accedi</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://bnhoengdtkrrwpbezwi.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_YI1wHHGNOnMeASCg7b4NQw_Ck2F1M2L";
+    const SCHOOL_PASSWORD = "GiuliaGAM";
+    const ADMIN_PASSWORD = "GiuliaGAM";
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const FALLBACK_QUESTIONS = [
+      {"id":1,"text":"Nella piramide di Maslow quale livello occupa il bisogno di sicurezza?","answers":["Quinto","Primo","Secondo"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":2,"text":"Definizione del concetto di rischio puro:","answers":["Evento che si manifesta in azienda e dal quale è possibile guadagnare o perdere","Evento esclusivamente doloso che procura danni diretti, indiretti e consequenziali","Rischio che comporta esclusivamente la possibilità di una perdita o un danno"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":3,"text":"Definizione di rischio speculativo","answers":["Evento che può procurare un guadagno","Evento che può procurare una perdita o un guadagno","Evento che può procurare una perdita o nessuna perdita"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":4,"text":"Qual è l'obiettivo prioritario del Risk Management?","answers":["Individuare le polizze assicurative più idonee","Conoscere il profilo dei rischi da fronteggiare","Decidere come gestire le emergenze"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":5,"text":"Lo Standard sulla gestione dei rischi è:","answers":["Norma ISO 22301","Norma ISO UNI 31000","Norma UNI 10459"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":6,"text":"Secondo la definizione dell'art. 133 T.U.L.P.S. le finalità delle guardie particolari giurate consistono:","answers":["Nella vigilanza o custodia delle proprietà mobiliari od immobiliari","Nella close protection di persone beni e veicoli","Nell'attività di pronto intervento su allarmi"],"correct":0,"shuffle":true,"category":"Normativa"},
+      {"id":7,"text":"Il Sistema di Gestione della Security Aziendale:","answers":["È un processo che può essere applicato a tutte le organizzazioni e si basa su una valutazione del rischio","È un processo che riguarda solo le infrastrutture critiche","È un processo che riguarda solo concessionari di pubblici servizi"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":8,"text":"Il ciclo di Deming utilizzato anche per la gestione ottimale della security aziendale di quali fasi si compone?","answers":["Plan, Do, Check, Act","Strategy, Plan, Act, Control","Plan, Act, Control, Redesign"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":9,"text":"In che modo le attività di Sicurezza incidono sul valore economico di un'impresa?","answers":["Riducendo il tasso di rischiosità e stabilizzando i flussi di reddito","Aumentando i flussi di reddito","Riducendo il tasso di rischiosità","Abbassando le spese di ripristino dopo un incidente."],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":10,"text":"Chi sono gli stakeholder in un'azienda:","answers":["Gli azionisti, le istituzioni e le banche","I dipendenti, i manager, CEO e CDA","Fornitori e clienti","Tutte le precedenti"],"correct":3,"shuffle":false,"category":"Security aziendale"},
+      {"id":11,"text":"Come si articola tradizionalmente la security aziendale?","answers":["Sicurezza in azienda, sicurezza nei cantieri e dei sistemi informativi","Sicurezza del lavoro, sicurezza delle persone, sicurezza delle cose","Sicurezza organizzativa, sicurezza fisica e sicurezza logica","Sicurezza delle azioni, sicurezza dei pensieri"],"correct":2,"shuffle":true,"category":"Security aziendale"},
+      {"id":12,"text":"Che cosa si intende per white collar crime?","answers":["Reato commesso da una persona rispettabile e di elevata condizione sociale nel corso della sua occupazione","Reato commesso da un esterno","Reato commesso da un operaio"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":13,"text":"Quali sono le principali misure di sicurezza fisica:","answers":["Reattive e proattive","Passive, Attive, Umano-metodologiche","Tecnologiche e procedurali"],"correct":1,"shuffle":true,"category":"Security aziendale"},
+      {"id":14,"text":"La policy nella funzione di security è un documento che:","answers":["Descrive le strategie e la pianificazione della Security","Descrive le linee generali degli obiettivi e le responsabilità delle risorse","Indica chi deve fare che cosa su ogni aspetto della Security"],"correct":1,"shuffle":true,"category":"Normativa"},
+      {"id":15,"text":"Qual è la normativa che determina i requisiti dell'attività svolta dagli Istituti di Vigilanza privata e dalle Agenzie di Investigazione Privata?","answers":["R.D. 06.05.1940, n. 635","D.P.R. 4 agosto 2008 n. 153","D.M. del 1° dicembre 2010, n. 269"],"correct":2,"shuffle":true,"category":"Normativa"},
+      {"id":16,"text":"La Norma UNI10459:2017 definisce quali profili del professionista della Security:","answers":["Security Expert","Security Manager","Senior Security Manager","Tutte le precedenti"],"correct":3,"shuffle":false,"category":"Sicurezza informazioni"},
+      {"id":17,"text":"Sicurezza delle informazioni - Con il termine \"parametri di sicurezza\" si fa riferimento ai seguenti attributi dell'informazione:","answers":["Riservatezza, Immediatezza, Disponibilità","Riservatezza, Integrità, Disponibilità","Identificazione, Autorizzazione, Autenticazione","Correttezza, Identificabilità, Tracciabilità"],"correct":1,"shuffle":true,"category":"Normativa"},
+      {"id":18,"text":"Per dato personale ai sensi del d.lgs.196/03 e del regolamento UE 2016/679 s'intende?","answers":["Nome e cognome della persona cui il dato si riferisce","Qualunque informazione relativa a persona fisica identificata o identificabile","Solo l'immagine della persona fisica","Nessuna delle risposte è corretta"],"correct":1,"shuffle":true,"category":"Sicurezza informazioni"},
+      {"id":19,"text":"Quali sono le principali categorie di strumenti per la sicurezza delle informazioni?","answers":["Antivirus e back up","Sistemi di monitoraggio (IDS, IPS) e firewall","Sicurezza fisica","Tutte le risposte"],"correct":3,"shuffle":false,"category":"Normativa"},
+      {"id":20,"text":"Il diritto di querela si esaurisce in:","answers":["Tre mesi","Novanta giorni","Mai, se previsto dalla legge"],"correct":0,"shuffle":true,"category":"Normativa"},
+      {"id":21,"text":"Il Decreto Legislativo 231/01 introduce quale elemento d'innovazione?","answers":["La responsabilità dei soggetti apicali e subordinati","La responsabilità punitiva diretta degli enti derivanti da reati commessi nell'interesse e vantaggio dell'ente","L'introduzione del principio dell'inversione dell'onere della prova","L'adozione di un modello organizzativo adeguato"],"correct":1,"shuffle":true,"category":"Normativa"},
+      {"id":22,"text":"Quali sono i principali requisiti perché un ente possa evitare la responsabilità amministrativa ex d.lgs. 231/2001?","answers":["L'adozione del solo Codice Etico","L'adozione di un efficace Modello di Organizzazione Gestione e Controllo e la nomina di un Organismo di Vigilanza","L'adozione di un Manuale della Qualità che faccia esplicito riferimento alla prevenzione della responsabilità amministrativa"],"correct":1,"shuffle":true,"category":"Normativa"},
+      {"id":23,"text":"Esiste in Italia una normativa che prevede la tutela delle infrastrutture critiche?","answers":["No","Il D.Lgs. 61/2011","Direttiva 2008/114/CE"],"correct":1,"shuffle":true,"category":"Crisis & emergenze"},
+      {"id":24,"text":"Che cosa s'intende per \"cigno nero\"?","answers":["Evento pianificabile non inserito nei rischi","Evento previsto con grande impatto","Evento inaspettato con grande impatto che solo dopo potrà essere prevedibile"],"correct":2,"shuffle":true,"category":"Crisis & emergenze"},
+      {"id":25,"text":"Quali sono le caratteristiche tipiche di un evento per essere considerato crisi in un'azienda?","answers":["Importanza e gravità","Bassa prevedibilità e poco tempo","Tutte le precedenti"],"correct":2,"shuffle":false,"category":"Crisis & emergenze"},
+      {"id":26,"text":"Il servizio \"Emergenza 112\" (N.U.E):","answers":["È il numero telefonico per contattare solo il pronto intervento dei carabinieri","È il Numero Unico dell'Emergenza da contattare per attivare i soccorsi in qualsiasi tipo di emergenza","Attivo su tutto il territorio nazionale","Attivo solo in Italia"],"correct":1,"shuffle":true,"category":"Crisis & emergenze"},
+      {"id":27,"text":"Informazione e formazione dei viaggiatori aziendali sono:","answers":["Consigliate","Scelta del datore di lavoro","Obbligo di legge"],"correct":2,"shuffle":true,"category":"Crisis & emergenze"},
+      {"id":28,"text":"L'etica:","answers":["Identifica ciò che è corretto e lo differenzia da ciò che è illecito","Studia i fondamenti oggettivi e razionali che permettono di distinguere i comportamenti umani in leciti o inappropriati","Fornisce chiavi di lettura per interpretare i comportamenti altrui","In un contesto prettamente religioso indica come concretizzare i principi dottrinali"],"correct":1,"shuffle":true,"category":"Security aziendale"},
+      {"id":29,"text":"Cosa è il codice etico aziendale?","answers":["È la carta costituzionale dell'impresa e racchiude l'insieme delle norme di comportamento e di valori etici a cui la Società si ispira e ai quali devono adeguarsi Amministratori dipendenti, collaboratori ed anche fornitori e consulenti","L'insieme delle policy e procedure che devono essere rispettate da tutti i dipendenti dell'azienda","Corrisponde alla carta dei valori aziendali condivisa da tutti gli stakeholder"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":30,"text":"Etimologia del termine sicurezza","answers":["Sine cura = senza preoccupazione","Attenzione alla percezione degli eventi in un'azienda","Analisi e progettazione di contromisure per la prevenzione"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":31,"text":"Una minaccia:","answers":["È una proprietà intrinseca o qualità di un determinato fattore","È un evento certo o incerto","È una fonte di rischio può potenzialmente causare conseguenze indesiderate","Non è mai un agente o un evento intenzionale o esterno che sfrutta una vulnerabilità"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":32,"text":"Un disastro naturale è:","answers":["Un rischio speculativo","Un rischio puro","Un rischio strategico","Un rischio comune"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":33,"text":"Si definisce pericolo:","answers":["Proprietà intrinseca o qualità di un determinato fattore che potenzialmente può causare danni","La probabilità che un certo evento si verifichi e l'impatto che ne può derivare","Elemento che possiede il potenziale di originare il rischio","Elemento che non possiede il potenziale di originare un rischio"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":34,"text":"Quale delle seguenti affermazioni si riferisce al valore di mercato di un'azienda?","answers":["Capacità dell'organizzazione di produrre reddito e risultati finanziari nel tempo","Insieme delle risorse tangibili e intangibili che costituiscono la solidità strutturale dell'organizzazione","Capitale immateriale costruito nel tempo attraverso comportamenti coerenti e responsabili","Valutazione attribuita all'impresa dagli investitori e dagli stakeholder esterni"],"correct":3,"shuffle":true,"category":"Security aziendale"},
+      {"id":35,"text":"Il rischio:","answers":["Può essere descritto utilizzando la formula che moltiplica la probabilità di accadimento di un determinato evento per l'impatto provocato da tale evento","È sempre oggettivo","Non può essere calcolato perché riguarda eventi e conseguenze incerte","È definito dalla probabilità di accadimento di un determinato evento moltiplicato per la relativa frequenza di accadimento"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":36,"text":"La UNI ISO 31000 come definisce il rischio?","answers":["Evento che può avere un effetto negativo sugli obiettivi, misurato in termini di conseguenze e di probabilità","Possibile evento che influenzerà negativamente il raggiungimento degli obiettivi","Effetto dell'incertezza in relazione agli obiettivi","Situazione o circostanza di incertezza sul raggiungimento degli obiettivi e dei programmi"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":37,"text":"Le tipologie di rischio si possono classificare con quali tassonomie?","answers":["Puri e speculativi","Esterni e interni","Strategici e operativi & Sistematici e specifici","Tutte le risposte precedenti"],"correct":3,"shuffle":false,"category":"Risk Management"},
+      {"id":38,"text":"Quali scenari globali è utile prendere in considerazione per comprendere i rischi?","answers":["Tecnologici e Socio-economici","Ambientali e Alimentari","Geopolitici","Tutte le risposte precedenti"],"correct":3,"shuffle":false,"category":"Security aziendale"},
+      {"id":39,"text":"La security si occupa principalmente di:","answers":["Prevenire, fronteggiare e superare eventi causati da azioni in prevalenza illecite contro beni e persone","Prevenire, fronteggiare e superare eventi causati da azioni in prevalenza illecite contro beni","Prevenire, fronteggiare e superare rischi causati da azioni in prevalenza illecite contro persone","Prevenire, fronteggiare e superare rischi causati da azioni in prevalenza illecite contro l'ambiente"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":40,"text":"Come si è evoluta negli anni la funzione di security?","answers":["Modello Risk Financing e poi Risk Controlling","Modello Castle Based, Business Oriented e infine Total Risk Governance","Modello Castle Based, Perimeter Security e infine Business Oriented","Nessuna delle risposte precedenti"],"correct":1,"shuffle":false,"category":"Geopolitica"},
+      {"id":41,"text":"Secondo la definizione di \"Sistema Paese\", quale delle seguenti affermazioni ne interpreta correttamente il significato strategico?","answers":["È l'insieme delle politiche di sicurezza e difesa adottate da uno Stato per contrastare minacce interne ed esterne","È la somma dei fattori interni di uno Stato che ne determinano la stabilità politica ed economica","È l'insieme integrato di fattori interni ed esterni attribuibili a uno Stato, che ne influenzano la posizione internazionale e sono orientati alla tutela dell'interesse nazionale","È il coordinamento operativo tra istituzioni civili e militari finalizzato alla gestione delle emergenze internazionali"],"correct":2,"shuffle":true,"category":"Geopolitica"},
+      {"id":42,"text":"Quale delle seguenti affermazioni descrive in modo più accurato il legame tra struttura demografica e rischio politico-sociale?","answers":["I Paesi con popolazione giovane sono intrinsecamente più stabili","I Paesi con popolazione giovane possono esprimere un forte potenziale di sviluppo, ma in assenza di adeguati investimenti risultano più esposti a instabilità socio-politica","I Paesi con popolazione anziana presentano minori costi sociali e quindi maggiore stabilità politica","La distribuzione per età incide esclusivamente sulla spesa sanitaria"],"correct":1,"shuffle":true,"category":"Geopolitica"},
+      {"id":43,"text":"Quale delle seguenti definizioni corrisponde con maggior aderenza al termine \"geopolitica\":","answers":["Lo studio dell'influenza del dato geografico sulle relazioni tra potenze","La disciplina che identifica le relazioni tra Paesi","La disciplina che analizza le relazioni economiche tra sistemi Paese","Lo studio dei fenomeni internazionali politici"],"correct":0,"shuffle":true,"category":"Geopolitica"},
+      {"id":44,"text":"Quale delle seguenti combinazioni di impatti riflette in modo più completo gli effetti del rischio geopolitico sull'organizzazione?","answers":["Interruzione della supply chain, incremento dei costi e rischio legale e reputazionale","Aumento temporaneo dei costi di trasporto","Miglioramento relazioni commerciali","Un impatto limitato alla gestione delle trasferte del personale"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":45,"text":"Quale tra le seguenti può essere una causa dell'effetto Domino dei problemi della catena di fornitura?","answers":["Irrazionalità o panico","Mancato coordinamento","Opportunismo","Lock-in di forniture"],"correct":3,"shuffle":true,"category":"Risk Management"},
+      {"id":46,"text":"Un sistema di ERM è/deve essere?","answers":["Statico e immutabile nel tempo","Circolare (PDCA – Plan Do Check Act) e adattivo","Rigorosamente analitico e senza approssimazioni di sorta","Nessuna delle risposte precedenti"],"correct":1,"shuffle":false,"category":"Risk Management"},
+      {"id":47,"text":"Nell'Analisi del Contesto, quali livelli devono essere analizzati?","answers":["Interno ed Esterno","Internazionale e Nazionale","Geopolitico e Geoeconomico","Ambientale e Sanitario"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":48,"text":"Il costo totale del rischio si calcola tenendo conto di:","answers":["Costi diretti + Costi indiretti + costi di prevenzione + costi di protezione","Solo i costi diretti e indiretti","Costi diretti + Costi indiretti + costi di prevenzione + costi di protezione + costi per il trasferimento","Solo i costi di prevenzione e protezione"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":49,"text":"Quale tra questi NON è un aspetto da tenere in considerazione per l'analisi del contesto interno:","answers":["Risorse","Infrastrutture","Attività","Processi"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":50,"text":"Nell'attività di Risk Assessment, quali fasi seguono la Risk Identification?","answers":["Risk Analysis e Risk Evaluation","Recording & Reporting","Monitoring & Review","Communication & Consultation"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":51,"text":"Quale tra queste è una politica di gestione del rischio?","answers":["Rinvio","Neutralizzazione","Trasferimento","Centralizzazione"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":52,"text":"Quali sono gli strumenti utili per l'analisi del settore?","answers":["PESTLE Analysis, Porter's Five Forces e SWOT","Balanced Scorecard, Canvas e Gantt","Benchmarking, Audit e Brainstorming","Organigramma, Budget e KPI"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":53,"text":"Il rischio viene calcolato come:","answers":["Frequenza + impatto","Probabilità × impatto","Vulnerabilità × minaccia","Minaccia × contromisura"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":54,"text":"L'attività di prevenzione è volta a:","answers":["Ridurre la gravità dell'evento","Trasferire il rischio a terzi","Ridurre la probabilità di un evento","Aumentare il risk appetite"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":55,"text":"Qual è l'obiettivo principale dell'attività di protezione?","answers":["Eliminare completamente il rischio","Ridurre la gravità di un evento","Ridurre la probabilità di un evento","Trasferire il rischio a terzi"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":56,"text":"Nel risk treatment, a cosa si riferisce il risk financing?","answers":["Alla scelta tra rischio accettabile e non accettabile","Alla riduzione della probabilità che un rischio si verifichi","All'individuazione dei mezzi di finanziamento per ripristinare la capacità produttiva dopo un evento dannoso","All'eliminazione preventiva di ogni rischio operativo"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":57,"text":"Nel risk control, quale decisione deve essere assunta rispetto al rischio?","answers":["Scegliere se il rischio è accettabile o non accettabile","Stabilire il budget annuale della funzione security","Trasferire automaticamente tutti i rischi all'assicurazione","Quantificare esclusivamente il danno economico finale"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":58,"text":"Le politiche di gestione del rischio sono:","answers":["Prevenzione, Protezione, Trasferimento, Ritenzione, Elusione","Prevenzione, Protezione, Trasferimento","Protezione, Ritenzione, Prevenzione, Elusione","Nessuna delle risposte precedenti"],"correct":0,"shuffle":false,"category":"Risk Management"},
+      {"id":59,"text":"Qual è la differenza principale tra contromisure di sicurezza passive e attive?","answers":["Le contromisure passive eliminano il rischio, le contromisure attive lo trasferiscono","Le contromisure passive fungono da deterrente, le contromisure attive innescano una risposta","Le contromisure passive sono solo tecnologiche, le contromisure attive solo organizzative","Le contromisure passive riducono il danno economico, le contromisure attive il danno reputazionale"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":60,"text":"Nel Risk Management, quale categoria di rischi comprende quelli al di fuori del controllo dell'organizzazione?","answers":["Esterni","Parzialmente indirizzabili","Interni","Strategici"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":61,"text":"La cultura del rischio è rappresentata come integrazione di due livelli distinti. Quali?","answers":["Prevenzione e protezione","Controllo e finanziamento","Strategia e compliance","Governance e comportamenti"],"correct":3,"shuffle":true,"category":"Risk Management"},
+      {"id":62,"text":"Quale affermazione descrive correttamente il modello di Risk Management Anticipatorio (RMA)?","answers":["Si concentra soprattutto su profili di rischio noti e su processi semplificati","È basato su standard, regole e sistemi chiusi","Si fonda sui Futures Studies e sulla gestione dell'incertezza autentica","È orientato prevalentemente a dati quantitativi e informazione accessibile"],"correct":2,"shuffle":true,"category":"Risk Management"},
+      {"id":63,"text":"Per quale motivo i modelli RMR e RMA vengono definiti sistemi complementari?","answers":["Per la completa eliminazione dell'incertezza","Per la resilienza culturale dell'organizzazione","Per la riduzione dei soli rischi interni","Per la sostituzione del modello reattivo con quello anticipatorio"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":64,"text":"Nella Business Impact Analysis, che cosa indica l'RTO (Recovery Time Objective)?","answers":["Il livello minimo di operatività necessario per garantire la continuità del business","Il tempo massimo tollerabile di interruzione prima che il danno diventi insostenibile","Il tempo obiettivo entro cui ripristinare l'operatività dopo un'interruzione","La quantità di dati che l'organizzazione può perdere senza subire impatti rilevanti"],"correct":2,"shuffle":true,"category":"Crisis & emergenze"},
+      {"id":65,"text":"Quale tra queste è una delle cinque componenti principali del framework COSO per l'Enterprise Risk Management?","answers":["Governance & Culture","Crisis & Recovery","Physical Security & Control Room","Audit & Compliance Mapping"],"correct":0,"shuffle":true,"category":"Security aziendale"},
+      {"id":66,"text":"Nel primo passo di definizione degli obiettivi del modello ERM, cosa significa SMART?","answers":["Specifico, Misurabile, Attuabile, Rilevante, basato sul Tempo","Strategico, Monitorato, Applicabile, Rapido, Tracciabile","Semplice, Misurabile, Analitico, Responsabile, Tempestivo","Specifico, Monitorabile, Adeguato, Razionale, Tecnico"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":67,"text":"Nel modello ERM, quale funzione svolge la SWOT Analysis rispetto agli obiettivi?","answers":["Definisce le scadenze temporali per il raggiungimento degli obiettivi","Analizza gli obiettivi rispetto a punti di forza, debolezze, opportunità e minacce","Misura esclusivamente i rischi economico-finanziari dell'organizzazione","Stabilisce il budget necessario per attuare il piano strategico"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":68,"text":"Nel contesto dei problemi della catena di fornitura, che cosa descrive l'effetto Forrester?","answers":["La riduzione delle inefficienze operative grazie al coordinamento tra tutti i fornitori","La diminuzione delle esposizioni al rischio nei vari livelli della catena produttiva","Il risultato finale di una catena di fattori di incidenti","L'amplificazione delle fluttuazioni della domanda allontanandosi man mano dal cliente finale"],"correct":3,"shuffle":true,"category":"Risk Management"},
+      {"id":69,"text":"Nel modello ERM, quale concetto indica il livello di rischio che l'organizzazione vuole sopportare rispetto ai propri obiettivi?","answers":["Risk appetite","Risk capacity","Risk tolerance","Risk assessment"],"correct":0,"shuffle":true,"category":"Risk Management"},
+      {"id":70,"text":"Nel modello ERM, quale tra questi concetti rappresenta l'ampiezza entro cui l'organizzazione può discostarsi dai propri obiettivi?","answers":["Risk appetite","Risk tolerance","Risk capacity","Risk response"],"correct":1,"shuffle":true,"category":"Risk Management"},
+      {"id":71,"text":"Nel monitoraggio dei rischi (KRI), quale tra questi indicatori è associato al rischio finanziario?","answers":["Numero di incidenti informatici e percentuale di dati non protetti","Numero di reclami, liquidità e verifiche interne non conformi","Copertura mediatica negativa e competenze critiche","Deviazione dal budget, debito pubblico e liquidità"],"correct":3,"shuffle":true,"category":"Risk Management"}
+    ];
+
+    const state = {
+      student: null,
+      allQuestions: [],
+      currentSession: null,
+      history: []
+    };
+
+    const screens = {
+      home: document.getElementById("screen-home"),
+      auth: document.getElementById("screen-auth"),
+      dashboard: document.getElementById("screen-dashboard"),
+      quiz: document.getElementById("screen-quiz"),
+      results: document.getElementById("screen-results"),
+      admin: document.getElementById("screen-admin")
+    };
+
+    function showScreen(name){
+      Object.values(screens).forEach(s=>s.classList.remove("active"));
+      screens[name].classList.add("active");
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function qs(id){ return document.getElementById(id); }
+
+    function sanitize(str){
+      return String(str ?? "").trim();
+    }
+
+    function setError(el, msg){
+      el.textContent = msg;
+      el.classList.add("show");
+    }
+
+    function clearError(el){
+      el.textContent = "";
+      el.classList.remove("show");
+    }
+
+    function fmtDate(d){
+      const dt = new Date(d);
+      return dt.toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit",year:"numeric"}) + " " +
+             dt.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+    }
+
+    function secondsToMinSec(total){
+      const m = String(Math.floor(total/60)).padStart(2,"0");
+      const s = String(total%60).padStart(2,"0");
+      return `${m}:${s}`;
+    }
+
+    function percentage(score,total){
+      if(!total) return 0;
+      return Math.round((score/total)*100);
+    }
+
+    function pillClassByPct(pct){
+      if(pct >= 75) return "good";
+      if(pct >= 50) return "mid";
+      return "bad";
+    }
+
+    function shuffleArray(arr){
+      const a = [...arr];
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function uniqueCategories(questions){
+      return [...new Set(questions.map(q=>q.category))].sort((a,b)=>a.localeCompare(b,"it"));
+    }
+
+    async function loadQuestions(){
+      try{
+        const { data, error } = await db.from("questions").select("*");
+        if(error) throw error;
+        if(Array.isArray(data) && data.length){
+          state.allQuestions = data.map(q => ({
+            id: q.id,
+            text: q.text,
+            answers: Array.isArray(q.answers) ? q.answers : q.answers,
+            correct: q.correct,
+            shuffle: !!q.shuffle,
+            category: q.category
+          }));
+          return;
+        }
+      }catch(e){}
+      state.allQuestions = FALLBACK_QUESTIONS;
+    }
+
+    async function registerStudent(){
+      clearError(qs("authError"));
+      const name = sanitize(qs("authName").value);
+      const surname = sanitize(qs("authSurname").value);
+      const password = sanitize(qs("authPassword").value);
+
+      if(!name || !surname || !password){
+        return setError(qs("authError"), "Compila tutti i campi.");
+      }
+
+      try{
+        const { data: existing, error: searchError } = await db
+          .from("students")
+          .select("*")
+          .eq("name", name)
+          .eq("surname", surname)
+          .eq("password", password);
+
+        if(searchError) throw searchError;
+
+        if(existing && existing.length){
+          setError(qs("authError"), "Questi dati sono già registrati. Puoi entrare direttamente.");
+          return;
+        }
+
+        const { data, error } = await db
+          .from("students")
+          .insert([{ name, surname, password }])
+          .select();
+
+        if(error) throw error;
+
+        state.student = data[0];
+        localStorage.setItem("alpha_student", JSON.stringify(state.student));
+        qs("authName").value = "";
+        qs("authSurname").value = "";
+        qs("authPassword").value = "";
+        await loadDashboard();
+        showScreen("dashboard");
+      }catch(err){
+        setError(qs("authError"), "Registrazione non riuscita.");
+      }
+    }
+
+    async function loginStudent(){
+      clearError(qs("authError"));
+      const name = sanitize(qs("authName").value);
+      const surname = sanitize(qs("authSurname").value);
+      const password = sanitize(qs("authPassword").value);
+
+      if(!name || !surname || !password){
+        return setError(qs("authError"), "Compila tutti i campi.");
+      }
+
+      try{
+        const { data, error } = await db
+          .from("students")
+          .select("*")
+          .eq("name", name)
+          .eq("surname", surname)
+          .eq("password", password);
+
+        if(error) throw error;
+        if(!data || !data.length){
+          return setError(qs("authError"), "Dati non corretti.");
+        }
+
+        state.student = data[0];
+        localStorage.setItem("alpha_student", JSON.stringify(state.student));
+        qs("authName").value = "";
+        qs("authSurname").value = "";
+        qs("authPassword").value = "";
+        await loadDashboard();
+        showScreen("dashboard");
+      }catch(err){
+        setError(qs("authError"), "Accesso non riuscito.");
+      }
+    }
+
+    function logout(){
+      state.student = null;
+      state.history = [];
+      state.currentSession = null;
+      localStorage.removeItem("alpha_student");
+      showScreen("home");
+    }
+
+    async function fetchStudentHistory(){
+      if(!state.student) return [];
+      try{
+        const { data, error } = await db
+          .from("results")
+          .select("*")
+          .eq("student_id", state.student.id)
+          .order("created_at", { ascending:false });
+
+        if(error) throw error;
+        state.history = data || [];
+        return state.history;
+      }catch(err){
+        state.history = [];
+        return [];
+      }
+    }
+
+    function renderMicroButtons(){
+      const container = qs("microButtons");
+      container.innerHTML = "";
+      uniqueCategories(state.allQuestions).forEach(cat=>{
+        const btn = document.createElement("button");
+        btn.className = "btn btn-secondary btn-mini";
+        btn.textContent = cat;
+        btn.onclick = () => startQuiz("micro", cat);
+        container.appendChild(btn);
+      });
+    }
+
+    function renderHistoryMetrics(){
+      const attempts = state.history.length;
+      const best = attempts ? Math.max(...state.history.map(x=>x.score)) : 0;
+      const last = attempts ? state.history[0].score : 0;
+
+      qs("metricAttempts").textContent = attempts;
+      qs("metricBest").textContent = best;
+      qs("metricLast").textContent = last;
+    }
+
+    function renderHistoryBars(){
+      const wrap = qs("historyBars");
+      wrap.innerHTML = "";
+      if(!state.history.length){
+        wrap.innerHTML = `<div class="empty">Ancora nessun tentativo salvato.</div>`;
+        return;
+      }
+
+      const recent = [...state.history].slice(0,6).reverse();
+      recent.forEach((item, idx)=>{
+        const pct = percentage(item.score, item.total);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div class="small">${item.category === "FULL" ? "Alpha Test" : item.category}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <div class="small" style="text-align:right">${pct}%</div>
+        `;
+        wrap.appendChild(row);
+      });
+    }
+
+    function computeWeakTopicsFromHistory(){
+      const map = {};
+      try{
+        const localByStudent = JSON.parse(localStorage.getItem(`alpha_attempt_details_${state.student.id}`) || "[]");
+        localByStudent.forEach(attempt=>{
+          (attempt.categoryStats || []).forEach(c=>{
+            if(!map[c.category]) map[c.category] = { total:0, correct:0 };
+            map[c.category].total += c.total;
+            map[c.category].correct += c.correct;
+          });
+        });
+      }catch(e){}
+
+      return Object.entries(map)
+        .map(([category, val])=>{
+          const pct = percentage(val.correct, val.total);
+          return { category, ...val, pct };
+        })
+        .sort((a,b)=>a.pct-b.pct);
+    }
+
+    function renderWeakList(){
+      const list = qs("weakList");
+      list.innerHTML = "";
+      const weak = computeWeakTopicsFromHistory();
+
+      if(!weak.length){
+        list.innerHTML = `<div class="empty">Fai almeno una simulazione per vedere i temi più deboli.</div>`;
+        return;
+      }
+
+      weak.slice(0,6).forEach(item=>{
+        const div = document.createElement("div");
+        div.className = "weak-item";
+        div.innerHTML = `
+          <div class="weak-head">
+            <strong>${item.category}</strong>
+            <span class="pill ${pillClassByPct(item.pct)}">${item.pct}% corrette</span>
+          </div>
+          <div class="small muted" style="margin-top:6px">${item.correct}/${item.total} corrette complessive</div>
+          <div style="margin-top:10px">
+            <button class="btn btn-secondary btn-mini">Avvia micro-test</button>
+          </div>
+        `;
+        div.querySelector("button").onclick = ()=>startQuiz("micro", item.category);
+        list.appendChild(div);
+      });
+    }
+
+    function renderHistoryList(){
+      const list = qs("historyList");
+      list.innerHTML = "";
+      if(!state.history.length){
+        list.innerHTML = `<div class="empty">Nessun tentativo presente.</div>`;
+        return;
+      }
+
+      state.history.slice(0,10).forEach(item=>{
+        const pct = percentage(item.score, item.total);
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+          <div class="history-head">
+            <div>
+              <strong>${item.category === "FULL" ? "Alpha Test completo" : "Micro-test: " + item.category}</strong>
+              <div class="small muted">${fmtDate(item.created_at)} · Tempo ${secondsToMinSec(item.time || 0)}</div>
+            </div>
+            <span class="pill ${pillClassByPct(pct)}">${item.score}/${item.total} · ${pct}%</span>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function loadDashboard(){
+      await loadQuestions();
+      await fetchStudentHistory();
+      qs("studentChip").textContent = `${state.student.name} ${state.student.surname}`;
+      renderMicroButtons();
+      renderHistoryMetrics();
+      renderHistoryBars();
+      renderWeakList();
+      renderHistoryList();
+    }
+
+    function prepQuestion(q){
+      let answers = [...q.answers];
+      let correctIndex = q.correct;
+
+      if(q.shuffle){
+        const pairs = answers.map((ans, idx)=>({ ans, isCorrect: idx === q.correct }));
+        const shuffled = shuffleArray(pairs);
+        answers = shuffled.map(x=>x.ans);
+        correctIndex = shuffled.findIndex(x=>x.isCorrect);
+      }
+
+      return {
+        ...q,
+        displayAnswers: answers,
+        displayCorrectIndex: correctIndex
+      };
+    }
+
+    function startQuiz(mode, category = null){
+      const pool = category
+        ? state.allQuestions.filter(q => q.category === category)
+        : [...state.allQuestions];
+
+      const count = category ? Math.min(15, pool.length) : Math.min(30, pool.length);
+      const chosen = shuffleArray(pool).slice(0, count).map(prepQuestion);
+
+      state.currentSession = {
+        mode,
+        category,
+        questions: chosen,
+        currentIndex: 0,
+        startedAt: Date.now(),
+        timerHandle: null,
+        answers: [],
+        selectedOptionIndex: null
+      };
+
+      qs("quizSubTitle").textContent = category ? `Micro-test · ${category}` : "Alpha Test 2026";
+      qs("legendType").textContent = category ? "Micro-test" : "Completa";
+      qs("legendCount").textContent = count;
+      qs("legendStudent").textContent = `${state.student.name} ${state.student.surname}`;
+
+      startTimer();
+      renderCurrentQuestion();
+      showScreen("quiz");
+    }
+
+    function stopTimer(){
+      if(state.currentSession?.timerHandle){
+        clearInterval(state.currentSession.timerHandle);
+        state.currentSession.timerHandle = null;
+      }
+    }
+
+    function startTimer(){
+      stopTimer();
+      const tick = ()=>{
+        const sec = Math.floor((Date.now() - state.currentSession.startedAt)/1000);
+        qs("quizTimer").textContent = secondsToMinSec(sec);
+      };
+      tick();
+      state.currentSession.timerHandle = setInterval(tick, 1000);
+    }
+
+    function renderCurrentQuestion(){
+      const session = state.currentSession;
+      const q = session.questions[session.currentIndex];
+      const idx = session.currentIndex;
+      const total = session.questions.length;
+      const pct = Math.round((idx / total) * 100);
+
+      qs("quizProgressLabel").textContent = `Domanda ${idx + 1} di ${total}`;
+      qs("quizProgressPct").textContent = `${pct}%`;
+      qs("quizProgressFill").style.width = `${pct}%`;
+      qs("quizCategory").textContent = q.category;
+      qs("quizQuestionText").textContent = q.text;
+
+      const answersBox = qs("quizAnswers");
+      answersBox.innerHTML = "";
+      const letters = ["A","B","C","D","E"];
+
+      session.selectedOptionIndex = null;
+      qs("btnNextQuestion").disabled = true;
+      qs("btnNextQuestion").textContent = idx === total - 1 ? "Concludi test" : "Avanti";
+
+      q.displayAnswers.forEach((ans, i)=>{
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        btn.type = "button";
+        btn.innerHTML = `
+          <div class="answer-letter">${letters[i] || (i+1)}</div>
+          <div class="answer-text">${ans}</div>
+        `;
+        btn.onclick = ()=>{
+          session.selectedOptionIndex = i;
+          [...answersBox.querySelectorAll(".answer")].forEach(x=>x.classList.remove("selected"));
+          btn.classList.add("selected");
+          qs("btnNextQuestion").disabled = false;
+        };
+        answersBox.appendChild(btn);
+      });
+    }
+
+    function nextQuestion(){
+      const session = state.currentSession;
+      if(session.selectedOptionIndex === null) return;
+
+      const q = session.questions[session.currentIndex];
+      session.answers.push({
+        questionId: q.id,
+        category: q.category,
+        questionText: q.text,
+        options: q.displayAnswers,
+        selectedIndex: session.selectedOptionIndex,
+        selectedText: q.displayAnswers[session.selectedOptionIndex],
+        correctIndex: q.displayCorrectIndex,
+        correctText: q.displayAnswers[q.displayCorrectIndex],
+        isCorrect: session.selectedOptionIndex === q.displayCorrectIndex
+      });
+
+      session.currentIndex++;
+
+      if(session.currentIndex >= session.questions.length){
+        finishQuiz();
+      }else{
+        renderCurrentQuestion();
+      }
+    }
+
+    async function saveResult(score, total, timeSpent, categoryTag, categoryStats){
+      try{
+        await db.from("results").insert([{
+          student_id: state.student.id,
+          score,
+          total,
+          time: timeSpent,
+          category: categoryTag
+        }]);
+      }catch(e){}
+
+      try{
+        const key = `alpha_attempt_details_${state.student.id}`;
+        const old = JSON.parse(localStorage.getItem(key) || "[]");
+        old.unshift({
+          created_at: new Date().toISOString(),
+          score,
+          total,
+          time: timeSpent,
+          category: categoryTag,
+          answers: state.currentSession.answers,
+          categoryStats
+        });
+        localStorage.setItem(key, JSON.stringify(old.slice(0,50)));
+      }catch(e){}
+    }
+
+    function computeCategoryStats(answerRows){
+      const map = {};
+      answerRows.forEach(a=>{
+        if(!map[a.category]) map[a.category] = { category:a.category, total:0, correct:0 };
+        map[a.category].total++;
+        if(a.isCorrect) map[a.category].correct++;
+      });
+      return Object.values(map).map(x=>({
+        ...x,
+        pct: percentage(x.correct, x.total)
+      })).sort((a,b)=>a.pct-b.pct);
+    }
+
+    async function finishQuiz(){
+      stopTimer();
+      const session = state.currentSession;
+      const total = session.questions.length;
+      const score = session.answers.filter(a=>a.isCorrect).length;
+      const timeSpent = Math.floor((Date.now() - session.startedAt)/1000);
+      const pct = percentage(score, total);
+      const categoryStats = computeCategoryStats(session.answers);
+      const categoryTag = session.category ? session.category : "FULL";
+
+      await saveResult(score, total, timeSpent, categoryTag, categoryStats);
+
+      qs("resultScoreBig").textContent = `${score}/${total}`;
+      qs("resultScorePct").textContent = `${pct}%`;
+      qs("resultSummaryText").textContent =
+        pct >= 75
+          ? "Buon risultato. Continua a consolidare i temi meno stabili."
+          : pct >= 50
+            ? "Risultato discreto, ma ci sono alcuni argomenti da ripassare."
+            : "Ci sono diversi temi da rinforzare. Usa le micro-simulazioni consigliate.";
+      qs("resultTimePill").textContent = `Tempo: ${secondsToMinSec(timeSpent)}`;
+      qs("resultTypePill").textContent = session.category ? `Micro-test · ${session.category}` : "Alpha Test completo";
+      qs("scoreCircle").style.setProperty("--deg", `${Math.round((pct/100)*360)}deg`);
+
+      renderResultCategoryBars(categoryStats);
+      renderWeakTopicsFromResult(categoryStats);
+      renderWrongAnswers(session.answers);
+
+      await loadDashboard();
+      showScreen("results");
+    }
+
+    function renderResultCategoryBars(categoryStats){
+      const box = qs("resultCategoryBars");
+      box.innerHTML = "";
+      if(!categoryStats.length){
+        box.innerHTML = `<div class="empty">Nessun dato disponibile.</div>`;
+        return;
+      }
+
+      categoryStats.forEach(item=>{
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div class="small">${item.category}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${item.pct}%"></div></div>
+          <div class="small" style="text-align:right">${item.pct}%</div>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    function renderWeakTopicsFromResult(categoryStats){
+      const wrap = qs("resultWeakTopics");
+      wrap.innerHTML = "";
+      const weak = categoryStats.filter(x=>x.pct < 100);
+
+      if(!weak.length){
+        wrap.innerHTML = `<div class="empty">Ottimo: nessun argomento critico in questa simulazione.</div>`;
+        return;
+      }
+
+      weak.forEach(item=>{
+        const div = document.createElement("div");
+        div.className = "weak-item";
+        div.innerHTML = `
+          <div class="weak-head">
+            <div>
+              <strong>${item.category}</strong>
+              <div class="small muted">${item.correct}/${item.total} corrette</div>
+            </div>
+            <span class="pill ${pillClassByPct(item.pct)}">${item.pct}%</span>
+          </div>
+          <div style="margin-top:10px">
+            <button class="btn btn-secondary btn-mini">Avvia micro-test</button>
+          </div>
+        `;
+        div.querySelector("button").onclick = ()=>startQuiz("micro", item.category);
+        wrap.appendChild(div);
+      });
+    }
+
+    function renderWrongAnswers(answerRows){
+      const box = qs("wrongAnswersList");
+      box.innerHTML = "";
+      const wrong = answerRows.filter(a=>!a.isCorrect);
+
+      if(!wrong.length){
+        box.innerHTML = `<div class="empty">Nessuna risposta sbagliata in questa simulazione.</div>`;
+        return;
+      }
+
+      wrong.forEach((item, idx)=>{
+        const div = document.createElement("div");
+        div.className = "wrong-item";
+        div.innerHTML = `
+          <div class="pill blue">${item.category}</div>
+          <h4 style="margin:10px 0 8px">Domanda ${idx+1}</h4>
+          <div style="font-size:19px;font-weight:600;line-height:1.3">${item.questionText}</div>
+          <div style="margin-top:10px">
+            <div class="small" style="color:var(--red)"><strong>Tua risposta:</strong> ${item.selectedText}</div>
+            <div class="small" style="color:var(--green);margin-top:4px"><strong>Risposta corretta:</strong> ${item.correctText}</div>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    async function openAdmin(){
+      showScreen("admin");
+      await loadAdminData();
+    }
+
+    async function loadAdminData(){
+      let students = [];
+      let results = [];
+
+      try{
+        const s = await db.from("students").select("*").order("created_at", { ascending:false });
+        students = s.data || [];
+      }catch(e){}
+
+      try{
+        const r = await db.from("results").select("*").order("created_at", { ascending:false });
+        results = r.data || [];
+      }catch(e){}
+
+      qs("adminStudentsCount").textContent = students.length;
+      qs("adminResultsCount").textContent = results.length;
+
+      const avg = results.length
+        ? Math.round(results.reduce((acc, r)=>acc + percentage(r.score, r.total), 0) / results.length)
+        : 0;
+      qs("adminAvgPct").textContent = avg;
+
+      const studentsList = qs("adminStudentsList");
+      studentsList.innerHTML = students.length ? "" : `<div class="empty">Nessuno studente registrato.</div>`;
+      students.slice(0,10).forEach(s=>{
+        const div = document.createElement("div");
+        div.className = "admin-item";
+        div.innerHTML = `
+          <strong>${s.name} ${s.surname}</strong>
+          <div class="small muted">${fmtDate(s.created_at)}</div>
+        `;
+        studentsList.appendChild(div);
+      });
+
+      const resultsList = qs("adminResultsList");
+      resultsList.innerHTML = results.length ? "" : `<div class="empty">Nessun tentativo salvato.</div>`;
+      results.slice(0,10).forEach(r=>{
+        const div = document.createElement("div");
+        div.className = "admin-item";
+        const pct = percentage(r.score, r.total);
+        div.innerHTML = `
+          <strong>${r.category === "FULL" ? "Alpha Test" : r.category}</strong>
+          <div class="small muted">${fmtDate(r.created_at)} · ${r.score}/${r.total} · ${pct}%</div>
+        `;
+        resultsList.appendChild(div);
+      });
+    }
+
+    function restoreStudent(){
+      try{
+        const raw = localStorage.getItem("alpha_student");
+        if(!raw) return false;
+        state.student = JSON.parse(raw);
+        return !!state.student;
+      }catch(e){
+        return false;
+      }
+    }
+
+    // EVENTS
+    qs("btnOpenSchool").onclick = ()=>{
+      qs("schoolPasswordInput").value = "";
+      clearError(qs("schoolError"));
+      qs("schoolModal").classList.add("show");
+      setTimeout(()=>qs("schoolPasswordInput").focus(),100);
+    };
+
+    qs("btnSchoolCancel").onclick = ()=>qs("schoolModal").classList.remove("show");
+    qs("btnSchoolSubmit").onclick = ()=>{
+      const val = sanitize(qs("schoolPasswordInput").value);
+      if(val !== SCHOOL_PASSWORD){
+        return setError(qs("schoolError"), "Password errata.");
+      }
+      clearError(qs("schoolError"));
+      qs("schoolModal").classList.remove("show");
+      showScreen("auth");
+    };
+
+    qs("schoolModal").onclick = (e)=>{
+      if(e.target === qs("schoolModal")) qs("schoolModal").classList.remove("show");
+    };
+
+    qs("btnBackHome").onclick = ()=>showScreen("home");
+    qs("btnRegister").onclick = registerStudent;
+    qs("btnLogin").onclick = loginStudent;
+    qs("btnLogout").onclick = logout;
+
+    qs("btnFullTest").onclick = ()=>startQuiz("full", null);
+    qs("btnFullTest2").onclick = ()=>startQuiz("full", null);
+    qs("btnGoMicro").onclick = ()=>{
+      const el = qs("microButtons");
+      el.scrollIntoView({behavior:"smooth",block:"center"});
+    };
+    qs("btnRefreshDashboard").onclick = loadDashboard;
+
+    qs("btnNextQuestion").onclick = nextQuestion;
+    qs("btnQuizBackDash").onclick = async ()=>{
+      stopTimer();
+      await loadDashboard();
+      showScreen("dashboard");
+    };
+    qs("btnQuitQuiz").onclick = async ()=>{
+      stopTimer();
+      await loadDashboard();
+      showScreen("dashboard");
+    };
+
+    qs("btnBackDashboardFromResults").onclick = async ()=>{
+      await loadDashboard();
+      showScreen("dashboard");
+    };
+    qs("btnDashboardFromResults2").onclick = async ()=>{
+      await loadDashboard();
+      showScreen("dashboard");
+    };
+    qs("btnNewFullTestFromResults").onclick = ()=>startQuiz("full", null);
+
+    qs("btnAdminOpen").onclick = ()=>{
+      qs("adminPasswordInput").value = "";
+      clearError(qs("adminError"));
+      qs("adminModal").classList.add("show");
+      setTimeout(()=>qs("adminPasswordInput").focus(),100);
+    };
+    qs("btnAdminCancel").onclick = ()=>qs("adminModal").classList.remove("show");
+    qs("btnAdminSubmit").onclick = async ()=>{
+      const val = sanitize(qs("adminPasswordInput").value);
+      if(val !== ADMIN_PASSWORD){
+        return setError(qs("adminError"), "Password errata.");
+      }
+      clearError(qs("adminError"));
+      qs("adminModal").classList.remove("show");
+      await openAdmin();
+    };
+    qs("adminModal").onclick = (e)=>{
+      if(e.target === qs("adminModal")) qs("adminModal").classList.remove("show");
+    };
+
+    qs("btnAdminBack").onclick = async ()=>{
+      await loadDashboard();
+      showScreen("dashboard");
+    };
+    qs("btnAdminRefresh").onclick = loadAdminData;
+
+    qs("authPassword").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") loginStudent();
+    });
+
+    qs("schoolPasswordInput").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") qs("btnSchoolSubmit").click();
+    });
+
+    qs("adminPasswordInput").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") qs("btnAdminSubmit").click();
+    });
+
+    // INIT
+    (async function init(){
+      await loadQuestions();
+      if(restoreStudent()){
+        await loadDashboard();
+        showScreen("dashboard");
+      }else{
+        showScreen("home");
+      }
+    })();
+  </script>
 </body>
 </html>
