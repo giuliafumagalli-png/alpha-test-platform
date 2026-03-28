@@ -59,6 +59,8 @@
     #msg {
       margin-top: 14px;
       font-size: 15px;
+      white-space: pre-wrap;
+      text-align: left;
     }
     .ok { color: #18864b; }
     .err { color: #c53a3a; }
@@ -81,8 +83,8 @@
   </div>
 
   <script>
-    const supabase = window.supabase.createClient(
-      "https://bnhoengdtrkrrwpbezwi.supabase.co",
+    const supabaseClient = window.supabase.createClient(
+      "https://bnhoengdtkrrwpbezwi.supabase.co",
       "sb_publishable_YI1wHHGNOnMeASCg7b4NQw_Ck2F1M2L"
     );
 
@@ -108,12 +110,12 @@
         return;
       }
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from("students")
         .insert([{ name, surname, password }]);
 
       if (error) {
-        showMsg("Errore registrazione: " + error.message, "err");
+        showMsg("Errore registrazione:\n" + error.message, "err");
         return;
       }
 
@@ -128,7 +130,7 @@
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("students")
         .select("*")
         .eq("name", name)
@@ -137,7 +139,7 @@
         .limit(1);
 
       if (error) {
-        showMsg("Errore login: " + error.message, "err");
+        showMsg("Errore login:\n" + error.message, "err");
         return;
       }
 
