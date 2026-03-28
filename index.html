@@ -87,10 +87,7 @@
       box-shadow:inset 0 0 0 2px rgba(255,255,255,.3);
     }
 
-    .brand-text{
-      text-align:left;
-    }
-
+    .brand-text{ text-align:left; }
     .brand-text .top{
       font-size:17px;
       color:var(--blue);
@@ -98,14 +95,12 @@
       text-transform:uppercase;
       line-height:1.1;
     }
-
     .brand-text .main{
       font-size:34px;
       line-height:1;
       color:var(--blue);
       font-weight:700;
     }
-
     .brand-text .sub{
       font-size:18px;
       color:var(--blue);
@@ -127,7 +122,6 @@
       cursor:pointer;
       transition:.2s ease;
     }
-
     .btn:hover{transform:translateY(-1px)}
     .btn-primary{background:var(--blue);color:#fff}
     .btn-primary:hover{background:var(--blue2)}
@@ -136,12 +130,6 @@
     .btn-danger{background:#fff;color:var(--red);border:1px solid #f0caca}
     .btn-mini{padding:10px 14px;font-size:16px;border-radius:12px}
     .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
-    .hint{
-      color:var(--muted);
-      font-size:15px;
-      margin-top:12px;
-    }
 
     .modal-overlay{
       position:fixed;
@@ -180,6 +168,8 @@
     .field:focus{border-color:#9db1ec;box-shadow:0 0 0 4px rgba(76,104,194,.10)}
     .error-text{display:none;color:var(--red);font-size:15px;margin-top:4px}
     .error-text.show{display:block}
+    .ok-text{display:none;color:var(--green);font-size:15px;margin-top:4px}
+    .ok-text.show{display:block}
     .modal-actions{display:flex;gap:10px;margin-top:8px}
 
     .topbar{
@@ -239,22 +229,10 @@
       justify-content:flex-end;
     }
 
-    .page{
-      padding:28px 0 42px;
-    }
-
-    .grid{
-      display:grid;
-      gap:18px;
-    }
-
-    .grid-2{
-      grid-template-columns:1.2fr .8fr;
-    }
-
-    .grid-3{
-      grid-template-columns:repeat(3,1fr);
-    }
+    .page{ padding:28px 0 42px; }
+    .grid{ display:grid; gap:18px; }
+    .grid-2{ grid-template-columns:1.2fr .8fr; }
+    .grid-3{ grid-template-columns:repeat(3,1fr); }
 
     .card{
       background:var(--card);
@@ -562,8 +540,6 @@
       background:#fbfcff;
     }
 
-    .hidden{display:none !important}
-
     @media (max-width: 980px){
       .grid-2,.quiz-layout,.result-hero,.result-grid{grid-template-columns:1fr}
       .grid-3,.admin-stats{grid-template-columns:1fr}
@@ -587,7 +563,6 @@
 </head>
 <body>
 
-  <!-- HOME -->
   <section id="screen-home" class="screen active">
     <div class="hero">
       <div class="hero-card wrap">
@@ -601,12 +576,10 @@
         </div>
         <div class="hero-title">Piattaforma riservata per simulazioni, micro-test e monitoraggio personalizzato.</div>
         <button class="btn btn-primary" id="btnOpenSchool">Accedi all'area scuola</button>
-        <div class="hint">Accesso studenti personale dopo la password scuola.</div>
       </div>
     </div>
   </section>
 
-  <!-- AUTH -->
   <section id="screen-auth" class="screen">
     <div class="topbar">
       <div class="topbar-inner">
@@ -633,6 +606,7 @@
             <input class="field" id="authSurname" placeholder="Cognome">
             <input class="field" id="authPassword" type="password" placeholder="Password">
             <div id="authError" class="error-text"></div>
+            <div id="authOk" class="ok-text"></div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
               <button class="btn btn-primary" id="btnLogin">Entra</button>
               <button class="btn btn-secondary" id="btnRegister">Registrati</button>
@@ -643,7 +617,6 @@
     </div>
   </section>
 
-  <!-- DASHBOARD -->
   <section id="screen-dashboard" class="screen">
     <div class="topbar">
       <div class="topbar-inner">
@@ -748,7 +721,6 @@
     </div>
   </section>
 
-  <!-- QUIZ -->
   <section id="screen-quiz" class="screen">
     <div class="topbar">
       <div class="topbar-inner">
@@ -812,7 +784,6 @@
     </div>
   </section>
 
-  <!-- RESULTS -->
   <section id="screen-results" class="screen">
     <div class="topbar">
       <div class="topbar-inner">
@@ -878,7 +849,6 @@
     </div>
   </section>
 
-  <!-- ADMIN -->
   <section id="screen-admin" class="screen">
     <div class="topbar">
       <div class="topbar-inner">
@@ -936,7 +906,6 @@
     </div>
   </section>
 
-  <!-- SCHOOL PASSWORD MODAL -->
   <div class="modal-overlay" id="schoolModal">
     <div class="modal">
       <h3>Accesso area scuola</h3>
@@ -950,7 +919,6 @@
     </div>
   </div>
 
-  <!-- ADMIN PASSWORD MODAL -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal">
       <h3>Accesso admin</h3>
@@ -1068,10 +1036,7 @@
     }
 
     function qs(id){ return document.getElementById(id); }
-
-    function sanitize(str){
-      return String(str ?? "").trim();
-    }
+    function sanitize(str){ return String(str ?? "").trim(); }
 
     function setError(el, msg){
       el.textContent = msg;
@@ -1079,6 +1044,16 @@
     }
 
     function clearError(el){
+      el.textContent = "";
+      el.classList.remove("show");
+    }
+
+    function setOk(el, msg){
+      el.textContent = msg;
+      el.classList.add("show");
+    }
+
+    function clearOk(el){
       el.textContent = "";
       el.classList.remove("show");
     }
@@ -1119,6 +1094,10 @@
       return [...new Set(questions.map(q=>q.category))].sort((a,b)=>a.localeCompare(b,"it"));
     }
 
+    function generateStudentId(){
+      return Math.floor(Date.now() + Math.random() * 100000);
+    }
+
     async function loadQuestions(){
       try{
         const { data, error } = await db.from("questions").select("*");
@@ -1140,6 +1119,8 @@
 
     async function registerStudent(){
       clearError(qs("authError"));
+      clearOk(qs("authOk"));
+
       const name = sanitize(qs("authName").value);
       const surname = sanitize(qs("authSurname").value);
       const password = sanitize(qs("authPassword").value);
@@ -1149,32 +1130,40 @@
       }
 
       try{
-        const { data: existing, error: searchError } = await db
+        const { data: existingSameName, error: searchError } = await db
           .from("students")
           .select("*")
           .eq("name", name)
-          .eq("surname", surname)
-          .eq("password", password);
+          .eq("surname", surname);
 
         if(searchError) throw searchError;
 
-        if(existing && existing.length){
-          setError(qs("authError"), "Questi dati sono già registrati. Puoi entrare direttamente.");
-          return;
+        if(existingSameName && existingSameName.some(x => String(x.password) === password)){
+          return setError(qs("authError"), "Questo profilo esiste già. Usa Entra.");
         }
+
+        const newId = generateStudentId();
 
         const { data, error } = await db
           .from("students")
-          .insert([{ name, surname, password }])
+          .insert([{
+            id: newId,
+            name,
+            surname,
+            password,
+            created_at: new Date().toISOString()
+          }])
           .select();
 
         if(error) throw error;
 
         state.student = data[0];
         localStorage.setItem("alpha_student", JSON.stringify(state.student));
+        setOk(qs("authOk"), "Registrazione avvenuta con successo.");
         qs("authName").value = "";
         qs("authSurname").value = "";
         qs("authPassword").value = "";
+
         await loadDashboard();
         showScreen("dashboard");
       }catch(err){
@@ -1184,6 +1173,8 @@
 
     async function loginStudent(){
       clearError(qs("authError"));
+      clearOk(qs("authOk"));
+
       const name = sanitize(qs("authName").value);
       const surname = sanitize(qs("authSurname").value);
       const password = sanitize(qs("authPassword").value);
@@ -1210,6 +1201,7 @@
         qs("authName").value = "";
         qs("authSurname").value = "";
         qs("authPassword").value = "";
+
         await loadDashboard();
         showScreen("dashboard");
       }catch(err){
@@ -1274,7 +1266,7 @@
       }
 
       const recent = [...state.history].slice(0,6).reverse();
-      recent.forEach((item, idx)=>{
+      recent.forEach((item)=>{
         const pct = percentage(item.score, item.total);
         const row = document.createElement("div");
         row.className = "bar-row";
@@ -1504,11 +1496,13 @@
     async function saveResult(score, total, timeSpent, categoryTag, categoryStats){
       try{
         await db.from("results").insert([{
+          id: generateStudentId(),
           student_id: state.student.id,
           score,
           total,
           time: timeSpent,
-          category: categoryTag
+          category: categoryTag,
+          created_at: new Date().toISOString()
         }]);
       }catch(e){}
 
@@ -1713,7 +1707,6 @@
       }
     }
 
-    // EVENTS
     qs("btnOpenSchool").onclick = ()=>{
       qs("schoolPasswordInput").value = "";
       clearError(qs("schoolError"));
@@ -1809,7 +1802,6 @@
       if(e.key === "Enter") qs("btnAdminSubmit").click();
     });
 
-    // INIT
     (async function init(){
       await loadQuestions();
       if(restoreStudent()){
