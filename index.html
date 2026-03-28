@@ -1,89 +1,153 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>Login Studente</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<style>
-body { font-family: Arial; background:#f4f6fb; text-align:center; }
-.box { background:white; padding:30px; border-radius:15px; width:300px; margin:100px auto; }
-input { width:100%; padding:10px; margin:10px 0; }
-button { padding:10px; margin:5px; }
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Studente</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .box {
+      width: min(420px, calc(100% - 32px));
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    h1 {
+      margin: 0 0 18px;
+      color: #2f4ea2;
+      font-size: 32px;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #cfd7e6;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #2f4ea2;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: white;
+      color: #2f4ea2;
+      border: 1px solid #2f4ea2;
+    }
+    #msg {
+      margin-top: 14px;
+      font-size: 15px;
+    }
+    .ok { color: #18864b; }
+    .err { color: #c53a3a; }
+  </style>
 </head>
 <body>
+  <div class="box">
+    <h1>Login Studente</h1>
 
-<div class="box">
-<h2>Login Studente</h2>
+    <input id="name" placeholder="Nome" />
+    <input id="surname" placeholder="Cognome" />
+    <input id="password" type="password" placeholder="Password" />
 
-<input id="name" placeholder="Nome">
-<input id="surname" placeholder="Cognome">
-<input id="password" type="password" placeholder="Password">
+    <div class="actions">
+      <button onclick="registerStudent()">Registrati</button>
+      <button class="secondary" onclick="loginStudent()">Entra</button>
+    </div>
 
-<button onclick="register()">Registrati</button>
-<button onclick="login()">Entra</button>
+    <div id="msg"></div>
+  </div>
 
-<div id="msg"></div>
-</div>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://bnhoengdtrkrrwpbezwi.supabase.co",
+      "sb_publishable_YI1wHHGNOnMeASCg7b4NQw_Ck2F1M2L"
+    );
 
-<script>
+    function showMsg(text, type) {
+      const el = document.getElementById("msg");
+      el.className = type;
+      el.textContent = text;
+    }
 
-// 🔴 INCOLLA QUI LA TUA KEY (SOLO QUI)
-const supabase = window.supabase.createClient(
-  "https://bnhoengdtrkrrwpbezwi.supabase.co",
-  "sb_publishable_YI1wHHGNOnMeASCg7b4NQw_Ck2F1M2L"
-);
+    function getValues() {
+      return {
+        name: document.getElementById("name").value.trim(),
+        surname: document.getElementById("surname").value.trim(),
+        password: document.getElementById("password").value.trim()
+      };
+    }
 
-// REGISTRAZIONE
-async function register() {
-  const name = document.getElementById("name").value;
-  const surname = document.getElementById("surname").value;
-  const password = document.getElementById("password").value;
+    async function registerStudent() {
+      const { name, surname, password } = getValues();
 
-  if(!name || !surname || !password){
-    show("Compila tutti i campi");
-    return;
-  }
+      if (!name || !surname || !password) {
+        showMsg("Compila tutti i campi.", "err");
+        return;
+      }
 
-  const { error } = await supabase.from("students").insert([
-    { name, surname, password }
-  ]);
+      const { error } = await supabase
+        .from("students")
+        .insert([{ name, surname, password }]);
 
-  if(error){
-    show("Errore registrazione");
-  } else {
-    show("Registrato ✅");
-  }
-}
+      if (error) {
+        showMsg("Errore registrazione: " + error.message, "err");
+        return;
+      }
 
-// LOGIN
-async function login() {
-  const name = document.getElementById("name").value;
-  const surname = document.getElementById("surname").value;
-  const password = document.getElementById("password").value;
+      showMsg("Registrazione completata.", "ok");
+    }
 
-  const { data, error } = await supabase
-    .from("students")
-    .select("*")
-    .eq("name", name)
-    .eq("surname", surname)
-    .eq("password", password);
+    async function loginStudent() {
+      const { name, surname, password } = getValues();
 
-  if(error || data.length === 0){
-    show("Login fallito ❌");
-  } else {
-    show("Login riuscito ✅");
-  }
-}
+      if (!name || !surname || !password) {
+        showMsg("Compila tutti i campi.", "err");
+        return;
+      }
 
-function show(t){
-  document.getElementById("msg").innerText = t;
-}
+      const { data, error } = await supabase
+        .from("students")
+        .select("*")
+        .eq("name", name)
+        .eq("surname", surname)
+        .eq("password", password)
+        .limit(1);
 
-</script>
+      if (error) {
+        showMsg("Errore login: " + error.message, "err");
+        return;
+      }
 
+      if (!data || data.length === 0) {
+        showMsg("Dati non corretti.", "err");
+        return;
+      }
+
+      showMsg("Login riuscito.", "ok");
+    }
+  </script>
 </body>
 </html>
